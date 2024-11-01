@@ -1,14 +1,19 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
+	"strings"
 
 	"github.com/yuin/goldmark"
 	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
+
+	readability "github.com/go-shiori/go-readability"
 )
 
 func main() {
@@ -72,9 +77,31 @@ func main() {
 				// get text of link
 				linkText := firstTextChild(&link.BaseNode, md)
 				linkHref := string(link.Destination)
+				var linkContent []byte
 
-				fmt.Println("Link Text:", linkText)
-				fmt.Println("Link Href:", linkHref)
+				if _, err := os.Stat(linkHref); !errors.Is(err, os.ErrNotExist) {
+					linkContent, err = getFileContent(linkHref)
+				} else {
+					linkContent, err = getUrlContent(linkHref)
+				}
+				if err != nil {
+					fmt.Println(err)
+					return ast.WalkStop, nil
+				}
+
+				if strings.ToLower(string(linkText)) == "cover" {
+					book.CoverImg = linkContent
+					return ast.WalkContinue, nil
+				}
+
+				// extract text using readability
+				article, err := readability.FromReader(strings.NewReader(string(linkContent)), nil)
+				if err != nil {
+					fmt.Println(err)
+					return ast.WalkStop, nil
+				}
+
+				book.AddChapter(string(linkText), article.Content)
 			}
 		default:
 			// fmt.Println("Not Heading")
@@ -84,6 +111,11 @@ func main() {
 	})
 
 	fmt.Println("First Heading:", book.Title)
+
+	for i, chapter := range book.Chapters {
+		fmt.Println("Chapter", i+1, ":", chapter.Title)
+		fmt.Println(chapter.BodyHTML)
+	}
 }
 
 func firstTextChild(heading *ast.BaseNode, md []byte) string {
@@ -95,4 +127,40 @@ func firstTextChild(heading *ast.BaseNode, md []byte) string {
 		}
 	}
 	return ret
+}
+
+func getUrlContent(url string) ([]byte, error) {
+	var content []byte
+
+	// fetch whatever is at the url
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	// read the response body
+	content, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
+
+func getFileContent(url string) ([]byte, error) {
+	var content []byte
+
+	file, err := os.Open(url)
+	if err != nil {
+		return nil, err
+	}
+
+	content, err = io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return content, nil
 }
