@@ -13,23 +13,61 @@ import (
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
 
+	"github.com/fatih/color"
 	"github.com/go-shiori/go-epub"
 	readability "github.com/go-shiori/go-readability"
+
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	// read file
-	file, err := os.Open("test.md")
+	app := &cli.App{
+		Name:  "gopherpress",
+		Usage: "Turn HTML into an ebook using Markdown",
+		Action: func(c *cli.Context) error {
+			input := c.String("input")
+			output := c.String("output")
+
+			run(c, input, output)
+			return nil
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "input",
+				Aliases:  []string{"i"},
+				Usage:    "Input file (Markdown)",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "output",
+				Aliases:  []string{"o"},
+				Usage:    "Output file (epub)",
+				Value:    "output.epub",
+				Required: false,
+			},
+		},
+	}
+
+	err := app.Run(os.Args)
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println(color.RedString("error: %s", err))
+	}
+}
+
+func run(_ *cli.Context, input string, output string) {
+	// read file
+	file, err := os.Open(input)
+	if err != nil {
+		fmt.Println(color.RedString("error: %s", err))
+		os.Exit(1)
 	}
 	defer file.Close()
 
 	// read file content
 	md, err := io.ReadAll(file)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(color.RedString("error: %s", err))
+		os.Exit(1)
 		return
 	}
 
@@ -119,33 +157,18 @@ func main() {
 
 				book.AddChapter(linkText, article.Content, linkHref)
 			}
-		default:
-			// fmt.Println("Not Heading")
 		}
 
 		return ast.WalkContinue, nil
 	})
 
-	fmt.Println("First Heading:", book.Title)
-
 	e, err := epub.NewEpub(book.Title)
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Println(color.RedString("error: %s", err))
+		os.Exit(1)
 	}
 
 	e.SetAuthor(book.Author)
-
-	// Add cover image
-	if len(book.CoverImg) > 0 {
-		coverImagePath, err := e.AddImage(book.CoverImg, "")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		e.SetCover(coverImagePath, "")
-	}
 
 	for _, chapter := range book.Chapters {
 		chapter.PreProcessHTML(chapter.LinkHref)
@@ -154,10 +177,21 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		e.EmbedImages()
+	}
+	e.EmbedImages()
+
+	// Add cover image
+	if len(book.CoverImg) > 0 {
+		coverImagePath, err := e.AddImage(book.CoverImg, "")
+		if err != nil {
+			fmt.Println(color.RedString("error: %s", err))
+			os.Exit(1)
+		}
+
+		e.SetCover(coverImagePath, "")
 	}
 
-	err = e.Write("output.epub")
+	err = e.Write(output)
 	if err != nil {
 		fmt.Println(err)
 		return
