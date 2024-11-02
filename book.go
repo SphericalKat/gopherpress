@@ -10,7 +10,7 @@ type Book struct {
 	Author   string
 	Summary  string
 	Chapters []Chapter
-	CoverImg []byte
+	CoverImg string
 }
 
 func NewBook() *Book {

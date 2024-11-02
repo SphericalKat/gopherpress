@@ -13,6 +13,7 @@ import (
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
 
+	"github.com/go-shiori/go-epub"
 	readability "github.com/go-shiori/go-readability"
 )
 
@@ -59,6 +60,10 @@ func main() {
 		switch n.(type) {
 		case *ast.Heading:
 			{
+				if !entering {
+					return ast.WalkContinue, nil
+				}
+
 				heading := n.(*ast.Heading)
 				if heading.Level != 1 {
 					return ast.WalkContinue, nil
@@ -77,20 +82,31 @@ func main() {
 				// get text of link
 				linkText := firstTextChild(&link.BaseNode, md)
 				linkHref := string(link.Destination)
-				var linkContent []byte
 
+				// extract content from link
+				var linkContent []byte
 				if _, err := os.Stat(linkHref); !errors.Is(err, os.ErrNotExist) {
 					linkContent, err = getFileContent(linkHref)
+					if err != nil {
+						fmt.Println(err)
+						return ast.WalkStop, nil
+					}
 				} else {
 					linkContent, err = getUrlContent(linkHref)
+					if err != nil {
+						fmt.Println(err)
+						return ast.WalkStop, nil
+					}
 				}
 				if err != nil {
 					fmt.Println(err)
 					return ast.WalkStop, nil
 				}
 
+				// if the link text is "cover", set the cover image
+				// and stop walking the tree
 				if strings.ToLower(string(linkText)) == "cover" {
-					book.CoverImg = linkContent
+					book.CoverImg = linkHref
 					return ast.WalkContinue, nil
 				}
 
@@ -112,9 +128,38 @@ func main() {
 
 	fmt.Println("First Heading:", book.Title)
 
-	for i, chapter := range book.Chapters {
-		fmt.Println("Chapter", i+1, ":", chapter.Title)
-		fmt.Println(chapter.BodyHTML)
+	e, err := epub.NewEpub(book.Title)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	e.SetAuthor(book.Author)
+
+	// Add cover image
+	if len(book.CoverImg) > 0 {
+		coverImagePath, err := e.AddImage(book.CoverImg, "")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		e.SetCover(coverImagePath, "")
+	}
+
+	for _, chapter := range book.Chapters {
+		_, err := e.AddSection(chapter.BodyHTML, chapter.Title, "", "")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		e.EmbedImages()
+	}
+
+	err = e.Write("output.epub")
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 }
 

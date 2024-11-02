@@ -5,8 +5,8 @@ summary: This book teaches you everything you need to know to implement a full-f
 
 # Crafting Interpreters
 
-# [Cover](https://prodimage.images-bn.com/pimages/9780990582939_p0_v1_s600x595.jpg)
+# [Cover](https://craftinginterpreters.com/image/header.png)
 
-# [Chapter 1: The Lox Language ](https://craftinginterpreters.com/the-lox-language.html)
+# [Chapter 1: The Lox Language](https://craftinginterpreters.com/the-lox-language.html)
 
 # [Chapter 2: Scanning](https://craftinginterpreters.com/scanning.html)
