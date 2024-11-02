@@ -50,3 +50,5 @@ summary: This book teaches you everything you need to know to implement a full-f
 ```
 
 It will generate an epub file with the title "Crafting Interpreters" and the author "Robert Nystrom". The summary will be displayed on the cover page. The chapters will be displayed in the order they appear in the markdown file.
+
+![screenshot](./docs/screenshot.png)
