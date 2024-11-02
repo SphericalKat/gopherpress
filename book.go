@@ -35,7 +35,7 @@ func (b *Book) AddChapter(title, body, linkHref string) {
 	})
 }
 
-func (c *Chapter) EmbedImgUrls(baseURL string) error {
+func (c *Chapter) PreProcessHTML(baseURL string) error {
 	base, err := url.Parse(baseURL)
 	if err != nil {
 		return err
@@ -52,17 +52,50 @@ func (c *Chapter) EmbedImgUrls(baseURL string) error {
 
 	var traverse func(*html.Node)
 	traverse = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "img" {
-			for i, attr := range n.Attr {
-				if attr.Key == "src" {
-					relativeURL, err := url.Parse(attr.Val)
-					if err != nil {
-						continue
+		if n.Type == html.ElementNode {
+			switch n.Data {
+			case "body":
+				// add chapter title as h1
+				titleNode := &html.Node{
+					Type: html.ElementNode,
+					Data: "h1",
+					Attr: []html.Attribute{},
+				}
+				titleNode.AppendChild(&html.Node{
+					Type: html.TextNode,
+					Data: c.Title,
+				})
+				n.InsertBefore(titleNode, n.FirstChild)
+			case "img":
+				for i, attr := range n.Attr {
+					if attr.Key == "src" {
+						relativeURL, err := url.Parse(attr.Val)
+						if err != nil {
+							continue
+						}
+						absoluteURL := base.ResolveReference(relativeURL).String()
+						n.Attr[i].Val = absoluteURL
 					}
-					absoluteURL := base.ResolveReference(relativeURL).String()
-					n.Attr[i].Val = absoluteURL
+				}
+			case "a":
+				if n.Parent != nil &&
+					n.Parent.Data == "h1" ||
+					n.Parent.Data == "h2" ||
+					n.Parent.Data == "h3" ||
+					n.Parent.Data == "h4" ||
+					n.Parent.Data == "h5" ||
+					n.Parent.Data == "h6" {
+					// replace the link with the text content
+					textNode := &html.Node{
+						Type: html.TextNode,
+						Data: GetTextContent(n),
+					}
+
+					n.Parent.InsertBefore(textNode, n)
+					n.Parent.RemoveChild(n)
 				}
 			}
+
 		}
 		for ch := n.FirstChild; ch != nil; ch = ch.NextSibling {
 			traverse(ch)

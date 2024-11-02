@@ -148,7 +148,7 @@ func main() {
 	}
 
 	for _, chapter := range book.Chapters {
-		chapter.EmbedImgUrls(chapter.LinkHref)
+		chapter.PreProcessHTML(chapter.LinkHref)
 		_, err := e.AddSection(chapter.BodyHTML, chapter.Title, "", "")
 		if err != nil {
 			fmt.Println(err)
