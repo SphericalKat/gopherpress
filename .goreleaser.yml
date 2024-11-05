@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+
+version: 2
+project_name: gopherpress
+
+builds:
+  - id: with-upx
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - ppc64le
+      - 386
+    goarm:
+      - 7
+    hooks:
+      post: 'upx {{ .Path }}'
+  - id: without-upx
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - 386
+
+universal_binaries:
+  - replace: true
+    ids:
+      - with-upx
+
+archives:
+  - format: binary
+    allow_different_binary_count: true
+    name_template: "{{ .Binary }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
+
+nfpms:
+  - vendor: SphericalKat
+    homepage: https://kat.bio
+    maintainer: SphericalKat <contact@kat.bio>
+    description: CLI tool for creating epubs from markdown files (with links to HTML pages)
+    license: MIT License
+    file_name_template: "{{ .PackageName }}_{{ .Os }}_{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}{{ with .Mips }}_{{ . }}{{ end }}"
+    formats:
+      - apk
+      - deb
+      - rpm
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+
+# TODO: Add AUR support
+# aurs:
+#   - name: gopherpress
+#     description: CLI tool for creating epubs from markdown files (with links to HTML pages)
+#     homepage: https://github.com/sphericalkat/gopherpress
+#     maintainers:
+#       - 'SphericalKat <contact@kat.bio>'
+#     license: GPL3
+#     private_key: '{{ .Env.AUR_KEY }}'
+#     git_url: 'ssh://aur@aur.archlinux.org/gopherpress.git'
+#     package: |
+#       install -Dm755 "./${pkgname}_${pkgver}_${CARCH}.binary" "${pkgdir}/usr/bin/gopherpress"
