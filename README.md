@@ -27,7 +27,7 @@ COMMANDS:
 GLOBAL OPTIONS:
    --input value, -i value   Input file (Markdown)
    --output value, -o value  Output file (epub) (default: "output.epub")
-   --help, -h                show hel
+   --help, -h                show help
 ```
 
 Given this input:
