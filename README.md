@@ -4,11 +4,13 @@ A simple tool to generate an epub book from a (properly) formatted markdown file
 
 ## Installation
 
-You can install `gopherpress` using `go install`:
+You can install the latest `gopherpress` snapshot using `go install`:
 
 ```bash
 go install github.com/sphericalkat/gopherpress@latest
 ```
+
+Instructions for installing the latest binary release can be found in the [wiki](https://github.com/SphericalKat/gopherpress/wiki/Installation)
 
 ## Description
 
