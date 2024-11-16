@@ -62,13 +62,13 @@ changelog:
 
 # TODO: Add AUR support
 aurs:
-  - name: gopherpress
+  - name: gopherpress-bin
     description: CLI tool for creating epubs from markdown files (with links to HTML pages)
     homepage: https://github.com/SphericalKat/gopherpress
     maintainers:
       - 'SphericalKat <contact@kat.bio>'
     license: GPL3
     private_key: '{{ .Env.AUR_KEY }}'
-    git_url: 'ssh://aur@aur.archlinux.org/gopherpress.git'
+    git_url: 'ssh://aur@aur.archlinux.org/gopherpress-bin.git'
     package: |
       install -Dm755 "./${pkgname}_${pkgver}_${CARCH}.binary" "${pkgdir}/usr/bin/gopherpress"
