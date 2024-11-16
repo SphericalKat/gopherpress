@@ -62,7 +62,7 @@ changelog:
 
 # TODO: Add AUR support
 aurs:
-  - name: gopherpress
+  - name: gopherpress-bin
     description: CLI tool for creating epubs from markdown files (with links to HTML pages)
     homepage: https://github.com/SphericalKat/gopherpress
     maintainers:
