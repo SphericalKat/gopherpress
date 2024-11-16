@@ -177,6 +177,10 @@ func run(_ *cli.Context, input string, output string) {
 
 	e.SetAuthor(book.Author)
 
+	if book.Summary != "" {
+		e.SetDescription(book.Summary)
+	}
+
 	for _, chapter := range book.Chapters {
 		chapter.PreProcessHTML(chapter.LinkHref)
 		_, err := e.AddSection(chapter.BodyHTML, chapter.Title, "", "")
