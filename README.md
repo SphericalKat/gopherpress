@@ -37,11 +37,10 @@ Given this input:
 title: Crafting Interpreters
 author: Robert Nystrom
 summary: This book teaches you everything you need to know to implement a full-featured, efficient scripting language. You'll learn both high-level concepts around parsing and semantics and gritty details like bytecode representation and garbage collection. Your brain will light up with new ideas, and your hands will get dirty and calloused.
+cover: https://craftinginterpreters.com/image/header.png
 ---
 
 # Crafting Interpreters
-
-# [Cover](https://craftinginterpreters.com/image/header.png)
 
 # [Chapter 1: The Lox Language](https://craftinginterpreters.com/the-lox-language.html)
 
@@ -49,6 +48,6 @@ summary: This book teaches you everything you need to know to implement a full-f
 
 ```
 
-It will generate an epub file with the title "Crafting Interpreters" and the author "Robert Nystrom". The summary will be displayed on the cover page. The chapters will be displayed in the order they appear in the markdown file.
+It will generate an epub file with the title "Crafting Interpreters" and the author "Robert Nystrom". The chapters will be displayed in the order they appear in the markdown file.
 
 ![screenshot](./docs/screenshot.png)

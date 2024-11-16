@@ -86,12 +86,26 @@ func run(_ *cli.Context, input string, output string) {
 	metadata := doc.OwnerDocument().Meta()
 	if title, ok := metadata["title"]; ok {
 		book.Title = title.(string)
+	} else {
+		fmt.Println(color.YellowString("warning: no title found, gopherpress will try to extract it from the first heading"))
 	}
+
 	if author, ok := metadata["author"]; ok {
 		book.Author = author.(string)
+	} else {
+		fmt.Println(color.YellowString("warning: no author found"))
 	}
+
 	if summary, ok := metadata["summary"]; ok {
 		book.Summary = summary.(string)
+	} else {
+		fmt.Println(color.YellowString("warning: no summary found"))
+	}
+
+	if coverImg, ok := metadata["cover"]; ok {
+		book.CoverImg = coverImg.(string)
+	} else {
+		fmt.Println(color.YellowString("warning: no cover image found"))
 	}
 
 	ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
@@ -139,13 +153,6 @@ func run(_ *cli.Context, input string, output string) {
 				if err != nil {
 					fmt.Println(err)
 					return ast.WalkStop, nil
-				}
-
-				// if the link text is "cover", set the cover image
-				// and stop walking the tree
-				if strings.ToLower(string(linkText)) == "cover" {
-					book.CoverImg = linkHref
-					return ast.WalkContinue, nil
 				}
 
 				// extract text using readability
