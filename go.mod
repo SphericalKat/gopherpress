@@ -1,19 +1,19 @@
 module github.com/sphericalkat/gopherpress
 
-go 1.22.2
+go 1.23
 
 require (
 	github.com/fatih/color v1.18.0
 	github.com/go-shiori/go-epub v1.2.1
-	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
+	github.com/go-shiori/go-readability v0.0.0-20251205110129-5db1dc9836f0
 	github.com/urfave/cli/v2 v2.27.5
 	github.com/yuin/goldmark v1.7.8
 	github.com/yuin/goldmark-meta v1.1.0
-	golang.org/x/net v0.31.0
+	golang.org/x/net v0.35.0
 )
 
 require (
-	github.com/andybalholm/cascadia v1.3.2 // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
@@ -25,7 +25,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
-	golang.org/x/sys v0.27.0 // indirect
-	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
