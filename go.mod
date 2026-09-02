@@ -1,6 +1,6 @@
 module github.com/sphericalkat/gopherpress
 
-go 1.22.2
+go 1.25
 
 require (
 	github.com/fatih/color v1.18.0
@@ -9,6 +9,7 @@ require (
 	github.com/urfave/cli/v2 v2.27.5
 	github.com/yuin/goldmark v1.7.8
 	github.com/yuin/goldmark-meta v1.1.0
+	github.com/yuin/goldmark-meta/v2 v2.0.2
 	golang.org/x/net v0.31.0
 )
 
