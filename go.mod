@@ -1,14 +1,15 @@
 module github.com/sphericalkat/gopherpress
 
-go 1.22.2
+go 1.25
 
 require (
 	github.com/fatih/color v1.18.0
 	github.com/go-shiori/go-epub v1.2.1
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 	github.com/urfave/cli/v2 v2.27.5
-	github.com/yuin/goldmark v1.7.8
+	github.com/yuin/goldmark v1.4.13
 	github.com/yuin/goldmark-meta v1.1.0
+	github.com/yuin/goldmark/v2 v2.0.1
 	golang.org/x/net v0.31.0
 )
 
